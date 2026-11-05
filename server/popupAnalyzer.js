@@ -261,10 +261,11 @@ export function applySafetyRules(result) {
 }
 
 // 판별할 때 쓸 시스템 프롬프트: 기본 규칙 + 판별 지식집 + 사용자가 확인해 준 최근 가짜 사례
-function buildSystemPrompt({ useKnowledge, store }) {
+// 저장소는 파일(노트북) 또는 Redis(배포 서버)라서 결과를 기다린다(await).
+async function buildSystemPrompt({ useKnowledge, store }) {
   let prompt = BASE_PROMPT
   if (useKnowledge) prompt += `\n${knowledgePrompt()}`
-  const examples = store?.learningExamples() ?? []
+  const examples = (await store?.learningExamples()) ?? []
   if (examples.length) {
     prompt += `\n\n[사용자가 확인해 준 최근 가짜 사례 (참고용, 화면 자체의 근거가 우선)]\n${examples.join('\n')}`
   }
@@ -297,8 +298,8 @@ export function createAnalyzer(keys, { useKnowledge = true, store = null } = {})
     const run = { anthropic: analyzeWithAnthropic, openrouter: analyzeWithOpenRouter, gemini: analyzeWithGemini }[
       provider.name
     ]
-    const result = await run(provider.client, buildSystemPrompt({ useKnowledge, store }), mediaType, data)
-    const caseId = store?.addCase({ imageHash, model: provider.model, result }) ?? null
+    const result = await run(provider.client, await buildSystemPrompt({ useKnowledge, store }), mediaType, data)
+    const caseId = (await store?.addCase({ imageHash, model: provider.model, result })) ?? null
     const withId = { ...result, caseId, patternName: patternName(result.pattern) }
     cache.set(imageHash, withId)
     if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value)
@@ -371,11 +372,11 @@ export function popupAnalyzerPlugin(keys) {
 
   const handler = async (req, res, next) => {
     if (req.url === '/api/analyze-popup/info') return send(res, 200, analyzer.info)
-    if (req.url === '/api/analyze-popup/stats') return send(res, 200, store.stats())
+    if (req.url === '/api/analyze-popup/stats') return send(res, 200, await store.stats())
     if (req.url === '/api/analyze-popup/feedback' && req.method === 'POST') {
       try {
         const { caseId, correct, actual } = JSON.parse(await readBody(req))
-        return send(res, store.addFeedback(caseId, { correct, actual }) ? 200 : 404, { ok: true })
+        return send(res, (await store.addFeedback(caseId, { correct, actual })) ? 200 : 404, { ok: true })
       } catch {
         return send(res, 400, { error: 'bad_feedback' })
       }

@@ -1,6 +1,8 @@
 # 2026-11-05 23:29 KST
 # main 브랜치에 올릴 때마다 GitHub Pages 로 자동 배포한다.
-# Pages 는 화면 파일만 올리므로 AI 판별 서버는 동작하지 않고, 앱은 시연 모드(예시 팝업)로 동작한다.
+# Pages 는 화면 파일만 올리므로, AI 판별은 Vercel 에 올린 서버 함수(api/index.js)가 맡는다.
+# 그 주소는 저장소 설정 → Secrets and variables → Actions → Variables 의 API_BASE_URL 에 넣는다.
+# 비어 있으면 앱은 시연 모드(예시 팝업)로 동작한다.
 name: GitHub Pages 배포
 
 on:
@@ -34,6 +36,7 @@ jobs:
         run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_API_BASE: ${{ vars.API_BASE_URL }}
 
       - uses: actions/configure-pages@v6
 

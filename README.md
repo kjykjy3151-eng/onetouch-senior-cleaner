@@ -11,7 +11,7 @@
 
 <p align="center">
   <b>체험하기: <a href="https://kjykjy3151-eng.github.io/onetouch-senior-cleaner/">kjykjy3151-eng.github.io/onetouch-senior-cleaner</a></b><br />
-  (배포 주소에는 AI 서버가 없어 AI 판별은 예시 팝업으로만 동작합니다. 실제 AI 판별은 아래 실행 방법으로 확인할 수 있습니다.)
+  (배포 주소의 AI 판별은 Vercel 서버 함수가 맡습니다. 서버가 연결되지 않았을 때는 예시 팝업으로만 동작합니다.)
 </p>
 
 ---
@@ -73,9 +73,26 @@ npm run dev             # http://localhost:5173
 - API 키는 Vite 개발 서버 안에서만 쓰이고 브라우저로 보내지지 않습니다.
 - `main` 브랜치에 올리면 GitHub Actions가 GitHub Pages로 자동 배포합니다(`.github/workflows/deploy-pages.yml`).
 
+## 배포 구조
+
+```
+휴대폰 → GitHub Pages (화면) → Vercel 서버 함수 api/index.js (키 보관) → Gemini
+                                        └→ Upstash Redis (판별 사례, 피드백)
+```
+
+- **화면:** `main`에 올리면 GitHub Actions가 GitHub Pages로 배포합니다. 저장소의 Actions 변수 `API_BASE_URL`에 Vercel 주소가 있으면 그 서버로 AI 판별을 요청합니다.
+- **AI 서버:** Vercel이 같은 저장소의 `api/index.js`를 서버 함수로 배포합니다. 노트북 개발 서버와 같은 판별 코드(지식집, 안전장치)를 씁니다.
+- **보안과 남용 방지:** 키는 Vercel 환경 변수에만 둡니다. 허용한 화면 주소(`ALLOWED_ORIGINS`, 기본 github.io)에서 온 요청만 받고, 모든 사용자 합계 1분 20회, 하루 300회까지만 AI에 보냅니다(`QUOTA_PER_MINUTE`, `QUOTA_PER_DAY`).
+
+| Vercel 환경 변수 | 내용 |
+| --- | --- |
+| `GEMINI_API_KEY` | 필수. Gemini 키 |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Vercel에서 Upstash Redis를 연결하면 자동으로 들어감 |
+| `ALLOWED_ORIGINS` | 선택. 기본 `https://kjykjy3151-eng.github.io` |
+
 ## 기술 스택
 
-React 19, Vite 8, Tailwind CSS v4, Lucide 아이콘, canvas-confetti, Google Gemini API(`@google/genai`), Anthropic API(`@anthropic-ai/sdk`, 선택), Web Speech API, PWA
+React 19, Vite 8, Tailwind CSS v4, Lucide 아이콘, canvas-confetti, Google Gemini API(`@google/genai`), Anthropic API(`@anthropic-ai/sdk`, 선택), Web Speech API, PWA, GitHub Pages, Vercel Functions, Upstash Redis
 
 ## 시연용 범위
 

@@ -71,6 +71,10 @@ server/popupAnalyzer.js      AI 판별 서버 (Vite 개발 서버 안에서만 �
 server/knowledge.js          판별 지식집 (출시 전 조사한 가짜 수법, 진짜 경고, 확인하는 법)
 server/caseStore.js          판별 사례 저장소 (결과와 사용자 피드백, 사진은 저장 안 함)
 server/data/                 쌓이는 사례 파일 cases.jsonl (git 제외)
+server/redisCaseStore.js     배포 서버용 사례 저장소 (Upstash Redis), 전체 사용량 상한
+api/index.js                 Vercel 서버 함수 (배포 주소의 AI 판별, 정보, 피드백, 통계)
+vercel.json                  Vercel 설정 (/api 경로 연결, 최대 실행 60초)
+.github/workflows/           GitHub Pages 자동 배포
 src/App.jsx                  발표용 무대, Before VS After 토글, 글자 크기 3단계
 src/components/
   AfterScreen.jsx            개선 후 앱 본체 (헤더, 안심 패널, 스캔, 감지, 완료, 하단 접근성 바)

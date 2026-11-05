@@ -3,6 +3,9 @@
 
 const MAX_SIDE = 1280
 
+// AI 서버 주소. 노트북 개발 서버는 같은 주소라 비워 두고, GitHub Pages 배포 때는 Vercel 서버 주소를 넣는다.
+const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/+$/, '')
+
 // 사진을 적당한 크기의 JPEG(base64)로 줄인다. 요청 크기와 응답 시간을 줄이기 위함.
 export async function toJpegBase64(src) {
   // decode()는 화면이 가려진 탭에서 멈출 수 있어 onload를 쓴다.
@@ -38,7 +41,7 @@ export const DEMO_FALLBACK_CODES = ['no_key', 'no_server', 'rate_limit', 'networ
 // 사용자 피드백 보내기. actual: 틀렸을 때 실제로는 무엇이었는지 (fake | real | unknown)
 export async function sendFeedback(caseId, correct, actual = null) {
   try {
-    const res = await fetch('/api/analyze-popup/feedback', {
+    const res = await fetch(`${API_BASE}/api/analyze-popup/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ caseId, correct, actual }),
@@ -52,7 +55,7 @@ export async function sendFeedback(caseId, correct, actual = null) {
 // 쌓인 판별 사례 현황 (발표 패널용)
 export async function fetchAiStats() {
   try {
-    const res = await fetch('/api/analyze-popup/stats')
+    const res = await fetch(`${API_BASE}/api/analyze-popup/stats`)
     if (res.ok) return await res.json()
   } catch {
     // 서버가 없으면 현황을 보여 주지 않는다.
@@ -63,7 +66,7 @@ export async function fetchAiStats() {
 // 서버가 어떤 AI에 연결됐는지 묻는다. 정적 배포처럼 서버가 없으면 연결 없음으로 본다.
 export async function fetchAiInfo() {
   try {
-    const res = await fetch('/api/analyze-popup/info')
+    const res = await fetch(`${API_BASE}/api/analyze-popup/info`)
     if (res.ok) return await res.json()
   } catch {
     // 연결 실패는 아래 기본값으로 처리한다.
@@ -85,7 +88,7 @@ const ERROR_MESSAGES = {
 export async function requestAnalysis(dataUrl) {
   try {
     const data = await toJpegBase64(dataUrl)
-    const res = await fetch('/api/analyze-popup', {
+    const res = await fetch(`${API_BASE}/api/analyze-popup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mediaType: 'image/jpeg', data }),
