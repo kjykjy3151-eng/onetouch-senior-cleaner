@@ -19,7 +19,6 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react'
-import StatusBar from './StatusBar'
 import UninstallGuide from './UninstallGuide'
 import ReportModal from './ReportModal'
 import AiCheckModal from './AiCheckModal'
@@ -92,7 +91,6 @@ export default function AfterScreen({ speech, fontLevel, fontLevels, onCycleFont
 
   return (
     <div className="relative flex h-full flex-col bg-[#FFF9F0] text-stone-900">
-      <StatusBar />
       <Header onPromise={() => setPromiseOpen(true)} />
 
       <main ref={mainRef} className="flex-1 overflow-y-auto px-4 py-5 [scrollbar-width:thin]">
@@ -182,7 +180,7 @@ function Header({ onPromise }) {
   ]
 
   return (
-    <header className="fixed-text shrink-0 space-y-3 border-b border-stone-200 bg-white px-4 pt-2 pb-4 shadow-sm">
+    <header className="fixed-text shrink-0 space-y-3 border-b border-stone-200 bg-white px-4 pt-4 pb-4 shadow-sm">
       <div className="flex items-center gap-2">
         <img
           src={`${import.meta.env.BASE_URL}logo.png`}

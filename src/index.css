@@ -43,7 +43,7 @@
 /* 가장 큰 글자 단계에서만 배치를 바꿀 때 (예: 두 칸 → 한 칸) */
 @custom-variant big (&:where([data-font="2"] *));
 
-/* 상태 표시줄, 제목 줄, 아래 도움 막대처럼 늘 같은 자리, 같은 크기여야 하는 틀 */
+/* 제목 줄, 아래 도움 막대처럼 늘 같은 자리, 같은 크기여야 하는 틀 */
 @utility fixed-text {
   --font-scale: 1;
   font-size: 1rem;
