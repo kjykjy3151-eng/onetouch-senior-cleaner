@@ -135,7 +135,7 @@ export default function AiCheckModal({ speak, onClose, onRemove }) {
 
             <div>
               <p className="text-base font-bold text-stone-600">사진이 없으면 예시로 해 보세요</p>
-              <div className="mt-2 grid grid-cols-2 gap-5">
+              <div className="mt-2 grid grid-cols-2 gap-5 big:grid-cols-1">
                 {samples.map((s) => (
                   <button
                     key={s.id}
@@ -143,7 +143,7 @@ export default function AiCheckModal({ speak, onClose, onRemove }) {
                     onClick={() => analyze(s.src, s)}
                     className="overflow-hidden rounded-2xl bg-stone-100 text-left ring-2 ring-transparent transition hover:ring-stone-400"
                   >
-                    <img src={s.src} alt="" className="h-36 w-full object-cover object-top" />
+                    <img src={s.src} alt="" className="h-36 w-full object-cover object-top big:object-center" />
                     <span className="block px-3 py-2 text-lg leading-snug font-bold">{s.label}</span>
                   </button>
                 ))}

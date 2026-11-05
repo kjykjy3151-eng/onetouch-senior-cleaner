@@ -196,7 +196,7 @@ function StepView({ step, total, data, onNext, onBack }) {
         {step + 1}단계. {data.text}
       </p>
 
-      <div>
+      <div className="fixed-text">
         <p className="mb-2 text-base text-stone-600">휴대폰 화면 (예시)</p>
         <Mock mock={data.mock} onTarget={onNext} />
       </div>

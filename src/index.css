@@ -29,12 +29,33 @@
   }
 }
 
-/* 시니어 기준 기본 글자 크기 18px. '가+' 버튼이 이 값을 바꾼다. */
+/* 글자 크기 단계: '가+' 버튼이 --font-scale(1, 1.17, 1.33)을 바꾼다.
+   여백, 아이콘, 버튼 틀은 그대로 두고 글자만 키워서 화면 배치가 무너지지 않게 한다.
+   inline 으로 두어야 각 요소에서 --font-scale 을 읽어, fixed-text 영역에서는 커지지 않는다. */
+@theme inline {
+  --text-base: calc(1rem * var(--font-scale, 1));
+  --text-lg: calc(1.125rem * var(--font-scale, 1));
+  --text-xl: calc(1.25rem * var(--font-scale, 1));
+  --text-2xl: calc(1.5rem * var(--font-scale, 1));
+  --text-3xl: calc(1.875rem * var(--font-scale, 1));
+}
+
+/* 가장 큰 글자 단계에서만 배치를 바꿀 때 (예: 두 칸 → 한 칸) */
+@custom-variant big (&:where([data-font="2"] *));
+
+/* 상태 표시줄, 제목 줄, 아래 도움 막대처럼 늘 같은 자리, 같은 크기여야 하는 틀 */
+@utility fixed-text {
+  --font-scale: 1;
+  font-size: 1rem;
+}
+
+/* 시니어 기준 기본 글자 크기 18px */
 html {
   font-size: 18px;
 }
 
 body {
+  font-size: calc(1rem * var(--font-scale, 1));
   margin: 0;
   background: #efe7da;
   -webkit-font-smoothing: antialiased;

@@ -21,7 +21,7 @@ export default function BeforeScreen() {
   ]
 
   return (
-    <div className="flex h-full flex-col bg-neutral-100 text-neutral-800">
+    <div className="fixed-text flex h-full flex-col bg-neutral-100 text-neutral-800">
       <StatusBar light />
       <header className="flex items-center justify-between bg-neutral-300 px-4 py-2">
         <div className="flex items-center gap-2">

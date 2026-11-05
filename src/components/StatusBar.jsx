@@ -13,7 +13,7 @@ export default function StatusBar({ light = false }) {
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-between px-6 pt-3 pb-1 text-base font-semibold ${
+      className={`fixed-text flex shrink-0 items-center justify-between px-6 pt-3 pb-1 text-base font-semibold ${
         light ? 'bg-neutral-300 text-neutral-700' : 'text-stone-700'
       }`}
       aria-hidden="true"

@@ -37,7 +37,7 @@ export default function ComparePanel({ mode }) {
   const { title, tone, icon: Icon, items } = CONTENT[mode]
 
   return (
-    <aside className="hidden w-96 shrink-0 self-center rounded-3xl bg-white p-7 shadow-sm ring-1 ring-stone-200 lg:block">
+    <aside className="fixed-text hidden w-96 shrink-0 self-center rounded-3xl bg-white p-7 shadow-sm ring-1 ring-stone-200 lg:block">
       <p className="text-base font-semibold text-stone-600">케이스 스터디 02</p>
       <h2 className={`mt-1 text-2xl font-extrabold ${tone}`}>{title}</h2>
       <ul className="mt-5 space-y-3">

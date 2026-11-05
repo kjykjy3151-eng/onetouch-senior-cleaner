@@ -100,7 +100,7 @@ export default function ReportModal({ apps, initialType = null, startPage = 'for
           <>
             <p className="mt-2 text-lg text-stone-700">어떤 화면을 보셨나요? 비슷한 것을 눌러 주세요.</p>
 
-            <div className="mt-4 grid grid-cols-2 gap-5">
+            <div className="mt-4 grid grid-cols-2 gap-5 big:grid-cols-1">
               {REPORT_TYPES.map((t) => {
                 const Icon = t.icon
                 const isOn = t.id === typeId

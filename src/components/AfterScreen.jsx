@@ -40,7 +40,7 @@ const PHASE_SPEECH = {
 }
 
 // 개선 후 화면: 안심 패널, 원터치 청소, 단계별 삭제 가이드, 신고
-export default function AfterScreen({ speech, fontLabel, onCycleFont }) {
+export default function AfterScreen({ speech, fontLevel, fontLevels, onCycleFont }) {
   const [phase, setPhase] = useState('safe') // safe | scanning | found | done
   const [selected, setSelected] = useState(() => SUSPICIOUS_APPS.map((a) => a.id))
   const [guideOpen, setGuideOpen] = useState(false)
@@ -125,7 +125,7 @@ export default function AfterScreen({ speech, fontLabel, onCycleFont }) {
         )}
       </main>
 
-      <AccessBar speech={speech} fontLabel={fontLabel} onCycleFont={onCycleFont} />
+      <AccessBar speech={speech} fontLevel={fontLevel} fontLevels={fontLevels} onCycleFont={onCycleFont} />
 
       {guideOpen && (
         <UninstallGuide
@@ -182,7 +182,7 @@ function Header({ onPromise }) {
   ]
 
   return (
-    <header className="shrink-0 space-y-3 border-b border-stone-200 bg-white px-4 pt-2 pb-4 shadow-sm">
+    <header className="fixed-text shrink-0 space-y-3 border-b border-stone-200 bg-white px-4 pt-2 pb-4 shadow-sm">
       <div className="flex items-center gap-2">
         <img
           src={`${import.meta.env.BASE_URL}logo.png`}
@@ -218,11 +218,13 @@ function Header({ onPromise }) {
 }
 
 // 화면 아래 고정: 음성 안내, 글자 크기 (시니어가 언제든 같은 자리에서 찾을 수 있게)
-function AccessBar({ speech, fontLabel, onCycleFont }) {
+// 글자 크기와 상관없이 같은 크기로 두고, 지금 몇 단계인지 점으로 보여 준다.
+function AccessBar({ speech, fontLevel, fontLevels, onCycleFont }) {
+  const isMax = fontLevel === fontLevels - 1
   return (
     <nav
       aria-label="보기 도움"
-      className="grid shrink-0 grid-cols-2 gap-5 border-t border-stone-200 bg-white px-4 py-3"
+      className="fixed-text grid shrink-0 grid-cols-2 gap-5 border-t border-stone-200 bg-white px-4 py-3"
     >
       <button
         type="button"
@@ -238,11 +240,18 @@ function AccessBar({ speech, fontLabel, onCycleFont }) {
       <button
         type="button"
         onClick={onCycleFont}
-        aria-label={`글자 크게, 지금은 ${fontLabel}`}
-        className="flex min-h-14 flex-wrap items-center justify-center gap-x-2 rounded-2xl bg-stone-100 px-2 text-lg font-bold text-stone-900 hover:bg-stone-200"
+        aria-label={isMax ? '글자 원래 크기로' : `글자 크게, 지금은 ${fontLevel + 1}단계`}
+        className="flex min-h-14 flex-col items-center justify-center rounded-2xl bg-stone-100 px-2 font-bold text-stone-900 hover:bg-stone-200"
       >
-        <span className="text-xl font-extrabold whitespace-nowrap">가+</span>
-        <span className="whitespace-nowrap">글자 크게</span>
+        <span className="flex items-center gap-1.5 text-lg whitespace-nowrap">
+          <span className="text-xl font-extrabold">{isMax ? '가' : '가+'}</span>
+          {isMax ? '원래 크기로' : '글자 크게'}
+        </span>
+        <span className="mt-1 flex gap-1.5" aria-hidden="true">
+          {Array.from({ length: fontLevels }, (_, i) => (
+            <span key={i} className={`size-2 rounded-full ${i <= fontLevel ? 'bg-emerald-700' : 'bg-stone-300'}`} />
+          ))}
+        </span>
       </button>
     </nav>
   )
@@ -260,7 +269,7 @@ function SafePanel({ lastCleaned, onStart, onAiCheck, onReport, onInstall }) {
             <ShieldCheck className="size-16 text-white" strokeWidth={2.2} />
           </span>
         </div>
-        <h2 className="mt-4 text-[1.4rem] font-extrabold">현재 휴대폰은 안전합니다</h2>
+        <h2 className="mt-4 text-[calc(1.4rem*var(--font-scale,1))] font-extrabold">현재 휴대폰은 안전합니다</h2>
         <p className="mt-2 text-lg text-stone-700">
           {lastCleaned
             ? `마지막 청소: 오늘 ${formatTime(lastCleaned)}`
@@ -513,16 +522,16 @@ function DonePanel({ cleanedCount, lastCleaned, onReport, onNotif, onHome }) {
       </div>
 
       <dl className="animate-rise divide-y divide-stone-200 rounded-2xl bg-white px-5 text-left text-lg shadow-sm ring-1 ring-stone-200">
-        <div className="flex justify-between py-3">
-          <dt className="text-stone-600">정리한 앱</dt>
+        <div className="flex flex-wrap justify-between gap-x-4 py-3">
+          <dt className="whitespace-nowrap text-stone-600">정리한 앱</dt>
           <dd className="font-bold">{cleanedCount}개</dd>
         </div>
-        <div className="flex justify-between py-3">
-          <dt className="text-stone-600">검사 시각</dt>
+        <div className="flex flex-wrap justify-between gap-x-4 py-3">
+          <dt className="whitespace-nowrap text-stone-600">검사 시각</dt>
           <dd className="font-bold">오늘 {formatTime(lastCleaned)}</dd>
         </div>
-        <div className="flex justify-between py-3">
-          <dt className="text-stone-600">실시간 보호</dt>
+        <div className="flex flex-wrap justify-between gap-x-4 py-3">
+          <dt className="whitespace-nowrap text-stone-600">실시간 보호</dt>
           <dd className="font-bold text-emerald-700">켜짐</dd>
         </div>
       </dl>

@@ -5,10 +5,11 @@ import BeforeScreen from './components/BeforeScreen'
 import ComparePanel from './components/ComparePanel'
 import { useSpeech } from './hooks/useSpeech'
 
+// 글자만 키우는 배율 (기본 18px 기준 약 21px, 24px)
 const FONT_LEVELS = [
-  { px: 18, label: '보통' },
-  { px: 21, label: '크게' },
-  { px: 24, label: '아주 크게' },
+  { scale: 1, label: '보통' },
+  { scale: 1.17, label: '크게' },
+  { scale: 1.33, label: '아주 크게' },
 ]
 
 export default function App() {
@@ -17,7 +18,8 @@ export default function App() {
   const speech = useSpeech()
 
   useEffect(() => {
-    document.documentElement.style.fontSize = `${FONT_LEVELS[fontLevel].px}px`
+    document.documentElement.style.setProperty('--font-scale', FONT_LEVELS[fontLevel].scale)
+    document.documentElement.dataset.font = fontLevel
   }, [fontLevel])
 
   const cycleFont = () => {
@@ -42,7 +44,8 @@ export default function App() {
           ) : (
             <AfterScreen
               speech={speech}
-              fontLabel={FONT_LEVELS[fontLevel].label}
+              fontLevel={fontLevel}
+              fontLevels={FONT_LEVELS.length}
               onCycleFont={cycleFont}
             />
           )}
@@ -64,7 +67,7 @@ function ModeToggle({ mode, onChange }) {
     <div
       role="tablist"
       aria-label="개선 전후 화면 비교"
-      className="mt-2 flex shrink-0 items-center gap-1 rounded-full bg-white p-1 shadow-sm ring-1 ring-stone-200 sm:mt-0"
+      className="fixed-text mt-2 flex shrink-0 items-center gap-1 rounded-full bg-white p-1 shadow-sm ring-1 ring-stone-200 sm:mt-0"
     >
       {options.map((o, i) => (
         <div key={o.id} className="flex items-center gap-1">

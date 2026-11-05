@@ -425,7 +425,7 @@ function StepPage({ index, total, device, search, title, text, mock, onTarget, c
         {text}
       </p>
       {mock && (
-        <div>
+        <div className="fixed-text">
           <p className="mb-2 text-base text-stone-600">휴대폰 화면 (예시)</p>
           <Mock mock={mock} onTarget={onTarget ?? (() => {})} />
         </div>

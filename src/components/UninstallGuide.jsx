@@ -136,11 +136,11 @@ const HIGHLIGHT = 'ring-4 ring-amber-400 ring-offset-2 animate-pulse'
 export function TapHere({ light = false }) {
   return (
     <span
-      className={`pointer-events-none mt-2 flex items-center justify-center gap-1 text-base font-bold ${
+      className={`pointer-events-none mt-2 flex items-center justify-center gap-1 text-base font-bold whitespace-nowrap ${
         light ? 'text-amber-800' : 'text-amber-700'
       }`}
     >
-      <Hand className="size-5 animate-bounce" /> 여기를 눌러 주세요
+      <Hand className="size-5 shrink-0 animate-bounce" /> 여기를 눌러 주세요
     </span>
   )
 }
@@ -149,7 +149,7 @@ export function TapHere({ light = false }) {
 function StepGoToDelete({ app, onNext, onWrong }) {
   const Icon = app.icon
   return (
-    <div className="rounded-2xl bg-stone-100 p-4">
+    <div className="fixed-text rounded-2xl bg-stone-100 p-4">
       <div className="flex items-center gap-3">
         <span className="grid size-12 place-items-center rounded-xl bg-stone-200 text-stone-700">
           <Icon className="size-7" />
@@ -188,7 +188,7 @@ function StepAppInfo({ app, onNext, onWrong }) {
   return (
     <div>
       <p className="mb-2 text-base text-stone-600">휴대폰 설정 화면 (예시)</p>
-      <div className="rounded-2xl bg-white p-4 text-neutral-900 shadow-sm ring-1 ring-stone-300">
+      <div className="fixed-text rounded-2xl bg-white p-4 text-neutral-900 shadow-sm ring-1 ring-stone-300">
         <p className="text-lg font-bold">앱 정보</p>
         <div className="mt-3 flex flex-col items-center">
           <span className="grid size-16 place-items-center rounded-2xl bg-neutral-200 text-neutral-600">
@@ -234,7 +234,7 @@ function StepConfirm({ app, onNext, onWrong }) {
   return (
     <div>
       <p className="mb-2 text-base text-stone-600">휴대폰 확인 창 (예시)</p>
-      <div className="rounded-3xl bg-white p-5 text-neutral-900 shadow-xl ring-1 ring-stone-300">
+      <div className="fixed-text rounded-3xl bg-white p-5 text-neutral-900 shadow-xl ring-1 ring-stone-300">
         <div className="flex items-center gap-2">
           <Icon className="size-6 text-neutral-600" />
           <p className="text-lg font-bold">{app.name}</p>
