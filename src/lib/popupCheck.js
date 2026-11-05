@@ -33,7 +33,7 @@ export function readFileAsDataUrl(file) {
 }
 
 // 예시 팝업은 AI 연결이 없거나 불안정할 때도 시연할 수 있도록 준비한 결과로 대신한다.
-export const DEMO_FALLBACK_CODES = ['no_key', 'rate_limit', 'network', 'api']
+export const DEMO_FALLBACK_CODES = ['no_key', 'no_server', 'rate_limit', 'network', 'api']
 
 // 사용자 피드백 보내기. actual: 틀렸을 때 실제로는 무엇이었는지 (fake | real | unknown)
 export async function sendFeedback(caseId, correct, actual = null) {
@@ -73,6 +73,7 @@ export async function fetchAiInfo() {
 
 const ERROR_MESSAGES = {
   no_key: 'AI 연결 설정(API 키)이 아직 없어요.',
+  no_server: '이 시연 주소에서는 AI 판별이 꺼져 있어요. 처음으로 돌아가 예시 팝업으로 체험해 보세요.',
   auth: 'AI 연결 키가 올바르지 않아요.',
   rate_limit: '지금 요청이 많아요. 잠시 뒤에 다시 해 주세요.',
   network: 'AI 서버에 연결하지 못했어요. 인터넷을 확인해 주세요.',
@@ -90,8 +91,8 @@ export async function requestAnalysis(dataUrl) {
       body: JSON.stringify({ mediaType: 'image/jpeg', data }),
     })
     if (res.ok) return { ok: true, result: await res.json() }
-    // 404: 정적 배포(GitHub Pages 등)라서 서버가 없는 경우
-    const code = res.status === 404 ? 'no_key' : (await res.json().catch(() => ({}))).error
+    // 404: 정적 배포(GitHub Pages 등)라서 AI 서버가 없는 경우
+    const code = res.status === 404 ? 'no_server' : (await res.json().catch(() => ({}))).error
     return { ok: false, code, message: ERROR_MESSAGES[code] ?? 'AI 분석 중 문제가 생겼어요.' }
   } catch {
     return { ok: false, code: 'network', message: ERROR_MESSAGES.network }

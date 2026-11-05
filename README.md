@@ -9,6 +9,11 @@
   NEXT AI 해커톤 2026 출품작 (주제: 「내 전공 현장을 바꾸는 AI」)
 </p>
 
+<p align="center">
+  <b>체험하기: <a href="https://kjykjy3151-eng.github.io/onetouch-senior-cleaner/">kjykjy3151-eng.github.io/onetouch-senior-cleaner</a></b><br />
+  (배포 주소에는 AI 서버가 없어 AI 판별은 예시 팝업으로만 동작합니다. 실제 AI 판별은 아래 실행 방법으로 확인할 수 있습니다.)
+</p>
+
 ---
 
 ## 해결할 문제
@@ -66,6 +71,7 @@ npm run dev             # http://localhost:5173
 - 키가 없어도 실행됩니다. 이때 AI 판별은 앱에 들어 있는 예시 팝업 2종만 준비된 결과로 보여 줍니다.
 - AI 판별 성능 측정: `npm run eval:ai -- 3` (지식집 없이 비교: `--no-knowledge`)
 - API 키는 Vite 개발 서버 안에서만 쓰이고 브라우저로 보내지지 않습니다.
+- `main` 브랜치에 올리면 GitHub Actions가 GitHub Pages로 자동 배포합니다(`.github/workflows/deploy-pages.yml`).
 
 ## 기술 스택
 

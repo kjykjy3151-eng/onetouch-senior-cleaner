@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
+    // GitHub Pages 처럼 하위 주소(/저장소이름/)에 배포할 때는 BASE_PATH 로 지정한다. 평소에는 '/'.
+    base: process.env.BASE_PATH || '/',
     plugins: [
       react(),
       tailwindcss(),

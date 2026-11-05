@@ -78,7 +78,7 @@ export default function AiCheckModal({ speak, onClose, onRemove }) {
     } else if (sample && DEMO_FALLBACK_CODES.includes(res.code)) {
       // AI 연결이 없거나 불안정할 때는 예시 팝업에 한해 미리 준비한 결과를 보여 준다.
       setResult(sample.demoResult)
-      setDemoReason(res.code === 'no_key' ? 'no_key' : 'unstable')
+      setDemoReason(['no_key', 'no_server'].includes(res.code) ? 'no_key' : 'unstable')
       setStatus('result')
     } else {
       setError(res)
@@ -149,7 +149,7 @@ export default function AiCheckModal({ speak, onClose, onRemove }) {
                 ))}
               </div>
             </div>
-            <PrivacyNotice freeTier={aiInfo?.freeTier} />
+            <PrivacyNotice aiInfo={aiInfo} />
           </div>
         )}
 
@@ -201,7 +201,19 @@ export default function AiCheckModal({ speak, onClose, onRemove }) {
 }
 
 // 사진을 보내기 전 개인정보 안내. 무료 AI일 때는 더 분명하게 알린다.
-function PrivacyNotice({ freeTier }) {
+// AI 서버가 없는 배포(GitHub Pages 등)에서는 예시 팝업으로만 체험할 수 있다고 먼저 알린다.
+function PrivacyNotice({ aiInfo }) {
+  if (aiInfo && !aiInfo.provider) {
+    return (
+      <div className="flex gap-2 rounded-2xl bg-sky-50 p-4 text-lg ring-1 ring-sky-300">
+        <Info className="mt-1 size-5 shrink-0 text-sky-700" />
+        <p>
+          이 시연 주소에서는 AI 연결이 없어서, <b>아래 예시 팝업으로만 체험</b>할 수 있어요.
+        </p>
+      </div>
+    )
+  }
+  const freeTier = aiInfo?.freeTier
   return (
     <div className="flex gap-2 rounded-2xl bg-amber-50 p-4 text-lg ring-1 ring-amber-300">
       <Info className="mt-1 size-5 shrink-0 text-amber-800" />

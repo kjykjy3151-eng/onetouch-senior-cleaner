@@ -4,7 +4,7 @@
 
 > NEXT AI 해커톤(2026.11.05~11.06, 주제: 「내 전공 현장을 바꾸는 AI」) 출품작
 > 기준 시점: 2026-11-05 17:23 KST (한계 보완 반영)
-> 상태: 프로토타입 기능 구현 완료, **GitHub 공개 저장소에 올림** (github.com/kjykjy3151-eng/onetouch-senior-cleaner), 배포 전
+> 상태: 프로토타입 기능 구현 완료, **GitHub 공개 저장소** (github.com/kjykjy3151-eng/onetouch-senior-cleaner), **GitHub Pages 배포** (kjykjy3151-eng.github.io/onetouch-senior-cleaner, AI 판별은 시연 모드)
 
 ---
 
