@@ -35,6 +35,31 @@ export function readFileAsDataUrl(file) {
 // 예시 팝업은 AI 연결이 없거나 불안정할 때도 시연할 수 있도록 준비한 결과로 대신한다.
 export const DEMO_FALLBACK_CODES = ['no_key', 'rate_limit', 'network', 'api']
 
+// 사용자 피드백 보내기. actual: 틀렸을 때 실제로는 무엇이었는지 (fake | real | unknown)
+export async function sendFeedback(caseId, correct, actual = null) {
+  try {
+    const res = await fetch('/api/analyze-popup/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseId, correct, actual }),
+    })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
+// 쌓인 판별 사례 현황 (발표 패널용)
+export async function fetchAiStats() {
+  try {
+    const res = await fetch('/api/analyze-popup/stats')
+    if (res.ok) return await res.json()
+  } catch {
+    // 서버가 없으면 현황을 보여 주지 않는다.
+  }
+  return null
+}
+
 // 서버가 어떤 AI에 연결됐는지 묻는다. 정적 배포처럼 서버가 없으면 연결 없음으로 본다.
 export async function fetchAiInfo() {
   try {
@@ -128,6 +153,10 @@ export const SAMPLE_POPUPS = [
       verdict: 'fake',
       confidence: 'high',
       safetyNote: null,
+      pattern: 'fake_virus',
+      patternName: '가짜 바이러스, 보안 경고',
+      verify_tip: '인터넷 주소를 확인하세요. 낯선 주소에서 뜬 경고 창은 휴대폰이 보낸 것이 아니에요.',
+      caseId: null,
       headline: '가짜 경고예요. 누르지 마세요.',
       explanation:
         '휴대폰은 이렇게 빨간 창으로 "바이러스 3개"를 알려 주지 않아요. 겁을 줘서 다른 앱을 깔게 하려는 광고예요.',
@@ -148,6 +177,10 @@ export const SAMPLE_POPUPS = [
       verdict: 'real',
       confidence: 'high',
       safetyNote: null,
+      pattern: 'permission_dialog',
+      patternName: '권한 요청 창',
+      verify_tip: '휴대폰 기본 모양의 창이고 고를 수 있는 버튼이 있는지 확인하세요.',
+      caseId: null,
       headline: '진짜 휴대폰 알림이에요.',
       explanation:
         '휴대폰이 직접 띄우는 알림 허용 창이에요. 겁을 주거나 앱 설치를 요구하지 않아요.',

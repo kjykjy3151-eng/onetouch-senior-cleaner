@@ -16,6 +16,7 @@ import {
   DEMO_FALLBACK_CODES,
   SAMPLE_POPUPS,
   fetchAiInfo,
+  sendFeedback,
   readFileAsDataUrl,
   renderSample,
   requestAnalysis,
@@ -234,8 +235,14 @@ function ResultView({ image, result, demoReason, onRemove, onAgain }) {
           </div>
         </div>
         <p className="mt-3 text-lg leading-relaxed text-stone-800">{result.explanation}</p>
+        {result.patternName && result.verdict !== 'unsure' && (
+          <p className="mt-2 text-lg font-bold text-stone-800">
+            {result.verdict === 'fake' ? '알려진 수법: ' : '알려진 진짜 화면: '}
+            {result.patternName}
+          </p>
+        )}
         {result.confidence && (
-          <p className="mt-2 text-base text-stone-700">AI 확신 정도: {CONFIDENCE[result.confidence]}</p>
+          <p className="mt-1 text-base text-stone-700">AI 확신 정도: {CONFIDENCE[result.confidence]}</p>
         )}
       </section>
 
@@ -265,6 +272,15 @@ function ResultView({ image, result, demoReason, onRemove, onAgain }) {
         <p className="mt-1 text-lg font-semibold">{result.action}</p>
       </section>
 
+      {result.verify_tip && (
+        <section className="rounded-2xl bg-emerald-50 p-4 ring-1 ring-emerald-200">
+          <p className="flex items-center gap-2 text-base font-bold text-emerald-900">
+            <ShieldCheck className="size-5" /> 직접 확인하는 법
+          </p>
+          <p className="mt-1 text-lg">{result.verify_tip}</p>
+        </section>
+      )}
+
       {result.verdict === 'real' && (
         <p className="flex gap-2 rounded-2xl bg-sky-50 p-4 text-lg ring-1 ring-sky-300">
           <ShieldCheck className="mt-1 size-5 shrink-0 text-sky-700" />
@@ -282,6 +298,8 @@ function ResultView({ image, result, demoReason, onRemove, onAgain }) {
         </p>
       )}
       <p className="text-base text-stone-600">AI도 틀릴 수 있어요. 애매하면 누르지 말고 가족이나 118번에 물어보세요.</p>
+
+      {result.caseId && <FeedbackBox caseId={result.caseId} />}
 
       <div className="space-y-5">
         {result.verdict === 'fake' && (
@@ -309,5 +327,58 @@ function ResultView({ image, result, demoReason, onRemove, onAgain }) {
         </button>
       </div>
     </div>
+  )
+}
+
+// AI 판정이 맞았는지 사용자에게 묻는다. 답은 사례 저장소에 쌓여 다음 판별의 참고 자료와 정답률 측정에 쓰인다.
+function FeedbackBox({ caseId }) {
+  const [step, setStep] = useState('ask') // ask | which | done
+  const [message, setMessage] = useState('')
+
+  const send = async (correct, actual = null) => {
+    await sendFeedback(caseId, correct, actual)
+    setMessage(
+      actual === 'real'
+        ? '알려 주셔서 고마워요. 사람이 한 번 더 확인한 뒤 반영할게요.'
+        : '알려 주셔서 고마워요. 다음 판별에 참고할게요.',
+    )
+    setStep('done')
+  }
+
+  const btn = 'min-h-14 flex-1 rounded-2xl bg-white px-3 text-lg font-bold ring-1 ring-stone-300 hover:bg-stone-100'
+
+  return (
+    <section className="rounded-2xl bg-stone-100 p-4" aria-live="polite">
+      {step === 'ask' && (
+        <>
+          <p className="text-lg font-bold">AI 판정이 맞았나요?</p>
+          <div className="mt-3 flex gap-5">
+            <button type="button" className={btn} onClick={() => send(true)}>
+              맞았어요
+            </button>
+            <button type="button" className={btn} onClick={() => setStep('which')}>
+              틀렸어요
+            </button>
+          </div>
+        </>
+      )}
+      {step === 'which' && (
+        <>
+          <p className="text-lg font-bold">실제로는 어땠나요?</p>
+          <div className="mt-3 space-y-5">
+            <button type="button" className={`${btn} w-full`} onClick={() => send(false, 'fake')}>
+              가짜였어요
+            </button>
+            <button type="button" className={`${btn} w-full`} onClick={() => send(false, 'real')}>
+              진짜였어요
+            </button>
+            <button type="button" className={`${btn} w-full`} onClick={() => send(false, 'unknown')}>
+              잘 모르겠어요
+            </button>
+          </div>
+        </>
+      )}
+      {step === 'done' && <p className="text-lg font-semibold text-emerald-800">{message}</p>}
+    </section>
   )
 }

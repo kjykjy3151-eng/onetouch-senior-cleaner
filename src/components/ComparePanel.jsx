@@ -1,5 +1,7 @@
 // 2026-11-05 14:32 KST
-import { CircleCheck, CircleX } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { BrainCircuit, CircleCheck, CircleX } from 'lucide-react'
+import { fetchAiStats } from '../lib/popupCheck'
 
 const CONTENT = {
   before: {
@@ -46,9 +48,58 @@ export default function ComparePanel({ mode }) {
           </li>
         ))}
       </ul>
+      {mode === 'after' && <LearningStats />}
       <p className="mt-6 border-t border-stone-200 pt-4 text-base text-stone-600">
         해커톤 시연용 프로토타입입니다. 실제 기기를 검사하지 않아요.
       </p>
     </aside>
+  )
+}
+
+// AI 학습 현황: 판별 사례와 사용자 확인 결과가 쌓이는 모습을 발표 중에 보여 준다.
+function LearningStats() {
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    let alive = true
+    const load = () => fetchAiStats().then((s) => alive && setStats(s))
+    load()
+    const timer = setInterval(load, 5000)
+    return () => {
+      alive = false
+      clearInterval(timer)
+    }
+  }, [])
+
+  if (!stats) return null
+  const rate = stats.feedback ? Math.round((stats.feedbackCorrect / stats.feedback) * 100) : null
+
+  return (
+    <section className="mt-5 rounded-2xl bg-emerald-50 p-4 ring-1 ring-emerald-200">
+      <p className="flex items-center gap-2 text-base font-bold text-emerald-900">
+        <BrainCircuit className="size-5" /> AI 학습 현황 (실시간)
+      </p>
+      <dl className="mt-2 space-y-1 text-base text-stone-800">
+        <div className="flex justify-between">
+          <dt>쌓인 판별 사례</dt>
+          <dd className="font-bold">{stats.total}건</dd>
+        </div>
+        <div className="flex justify-between">
+          <dt>가짜, 진짜, 어려움</dt>
+          <dd className="font-bold">
+            {stats.fake}, {stats.real}, {stats.unsure}
+          </dd>
+        </div>
+        <div className="flex justify-between">
+          <dt>사용자 확인 정답률</dt>
+          <dd className="font-bold">{rate === null ? '아직 없음' : `${rate}% (${stats.feedback}건)`}</dd>
+        </div>
+        <div className="flex justify-between">
+          <dt>놓친 가짜 (위험 오류)</dt>
+          <dd className="font-bold">{stats.missedFakes}건</dd>
+        </div>
+      </dl>
+      <p className="mt-2 text-base text-stone-600">판별 지식집: 가짜 수법 7가지, 진짜 경고 4가지</p>
+    </section>
   )
 }

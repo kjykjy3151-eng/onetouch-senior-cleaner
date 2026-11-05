@@ -28,3 +28,6 @@ dist-ssr
 
 # 로컬 도구 설정
 .claude/
+
+# 쌓이는 판별 사례 (로컬 데이터)
+server/data/
