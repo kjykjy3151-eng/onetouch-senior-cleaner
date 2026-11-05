@@ -57,17 +57,24 @@ export default function ComparePanel({ mode }) {
 }
 
 // AI 학습 현황: 판별 사례와 사용자 확인 결과가 쌓이는 모습을 발표 중에 보여 준다.
+// 배포 서버의 무료 데이터베이스 한도(월 50만 명령)를 아끼려고 30초마다, 화면을 보고 있을 때만 새로 고친다.
+const STATS_REFRESH_MS = 30_000
+
 function LearningStats() {
   const [stats, setStats] = useState(null)
 
   useEffect(() => {
     let alive = true
-    const load = () => fetchAiStats().then((s) => alive && setStats(s))
+    const load = () => {
+      if (document.visibilityState === 'visible') fetchAiStats().then((s) => alive && setStats(s))
+    }
     load()
-    const timer = setInterval(load, 5000)
+    const timer = setInterval(load, STATS_REFRESH_MS)
+    document.addEventListener('visibilitychange', load)
     return () => {
       alive = false
       clearInterval(timer)
+      document.removeEventListener('visibilitychange', load)
     }
   }, [])
 
