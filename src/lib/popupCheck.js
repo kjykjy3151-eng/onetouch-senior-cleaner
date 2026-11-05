@@ -91,8 +91,8 @@ export async function requestAnalysis(dataUrl) {
       body: JSON.stringify({ mediaType: 'image/jpeg', data }),
     })
     if (res.ok) return { ok: true, result: await res.json() }
-    // 404: 정적 배포(GitHub Pages 등)라서 AI 서버가 없는 경우
-    const code = res.status === 404 ? 'no_server' : (await res.json().catch(() => ({}))).error
+    // 404, 405: 정적 배포(GitHub Pages 등)라서 AI 서버가 없는 경우 (Pages 는 POST 에 405 로 답한다)
+    const code = [404, 405].includes(res.status) ? 'no_server' : (await res.json().catch(() => ({}))).error
     return { ok: false, code, message: ERROR_MESSAGES[code] ?? 'AI 분석 중 문제가 생겼어요.' }
   } catch {
     return { ok: false, code: 'network', message: ERROR_MESSAGES.network }
