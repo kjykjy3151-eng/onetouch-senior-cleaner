@@ -94,6 +94,8 @@ npm run dev             # http://localhost:5173
 
 React 19, Vite 8, Tailwind CSS v4, Lucide 아이콘, canvas-confetti, Google Gemini API(`@google/genai`), Anthropic API(`@anthropic-ai/sdk`, 선택), Web Speech API, PWA, GitHub Pages, Vercel Functions, Upstash Redis
 
+**교내 GPU(틸론) 활용:** 앱 로고를 틸론 주피터 노트북에서 Python matplotlib으로 직접 그려 앱 상단 로고와 홈 화면 아이콘에 반영했습니다. 코드와 결과 이미지는 [`notebooks/`](notebooks/) 폴더에 있습니다.
+
 ## 시연용 범위
 
 해커톤 프로토타입이라 일부 기능은 화면 흉내입니다.
