@@ -25,7 +25,7 @@ const CACHE_LIMIT = 100
 const RATE_LIMIT_PER_MINUTE = 12
 
 const BASE_PROMPT = `당신은 스마트폰이 익숙하지 않은 40대 이상 중장년층과 어르신을 돕는 휴대폰 보안 도우미입니다.
-사용자가 휴대폰 화면 캡처를 보내면, 그 화면이 진짜 휴대폰(안드로이드, 아이폰) 시스템 알림인지, 아니면 광고나 수상한 앱이 띄운 가짜 경고인지 판별합니다.
+사용자가 휴대폰 화면 캡처를 보내면, 그 화면이 진짜 휴대폰(안드로이드, 아이폰) 시스템 알림인지, 광고나 수상한 앱이 띄운 가짜 경고인지, 아니면 정상 앱 안의 평범한 광고인지 판별합니다.
 
 가짜 경고를 가려낼 때 볼 단서:
 - 느낌표, 빨간색, 카운트다운으로 겁을 주거나 서두르게 하는지
@@ -37,6 +37,9 @@ const BASE_PROMPT = `당신은 스마트폰이 익숙하지 않은 40대 이상 
 판정 규칙 (가짜를 진짜로 잘못 알려 주는 것이 가장 위험합니다):
 - 결제, 비밀번호나 인증번호 같은 개인정보 입력, 앱 설치, 링크 이동을 요구하는 화면은 진짜처럼 보여도 "real"로 판정하지 않습니다.
 - "real"은 진짜 시스템 화면이라는 확실한 근거가 있을 때만 고릅니다. 조금이라도 의심되면 "unsure"를 고릅니다.
+- "ad"는 정상 앱 안에서 뜨는 평범한 광고나 광고 안내(예: "광고 로딩 중", "광고를 보면 무료로 이용")일 때만 고릅니다. 시스템 알림은 아니지만 사기 화면도 아닌 경우입니다.
+- "ad"는 아래를 하나도 하지 않을 때만 고릅니다: 겁주기, 서두르게 하기(카운트다운), 바이러스나 고장 같은 경고, 앱 설치, 링크 이동, 개인정보 입력, 결제, 전화. 하나라도 하면 "fake"입니다.
+- 광고처럼 보여도 휴대폰이 위험하다고 말하거나 무언가를 하라고 시키면 "ad"가 아니라 "fake"입니다.
 - confidence에는 판정에 대한 확신 정도를 솔직하게 적습니다.
 - pattern에는 아래 지식집에서 가장 가까운 항목의 id를 적고, 맞는 것이 없으면 "none"을 적습니다.
 
@@ -50,8 +53,9 @@ const RESULT_SCHEMA = {
   properties: {
     verdict: {
       type: 'string',
-      enum: ['fake', 'real', 'unsure'],
-      description: 'fake: 가짜 경고나 사기 화면, real: 진짜 휴대폰 시스템 알림, unsure: 판단하기 어려움',
+      enum: ['fake', 'real', 'ad', 'unsure'],
+      description:
+        'fake: 가짜 경고나 사기 화면, real: 진짜 휴대폰 시스템 알림, ad: 정상 앱 안의 평범한 광고(겁주기, 설치, 개인정보, 결제, 전화 요구가 전혀 없음), unsure: 판단하기 어려움',
     },
     confidence: {
       type: 'string',
@@ -253,6 +257,20 @@ export function applySafetyRules(result) {
       report_type: 'none',
       safetyNote: 'AI가 확신하지 못해 "판단 어려움"으로 알려 드려요.',
     }
+  }
+  // "위험하지 않은 광고"도 가짜를 놓치는 쪽의 판정이라 같은 기준을 건다.
+  if (result.verdict === 'ad' && result.confidence !== 'high') {
+    return {
+      ...result,
+      verdict: 'unsure',
+      headline: '평범한 광고 같지만 확실하지 않아요.',
+      action: '광고 안의 버튼은 누르지 말고, 닫기나 뒤로 가기만 눌러 주세요.',
+      report_type: 'none',
+      safetyNote: 'AI가 확신하지 못해 "판단 어려움"으로 알려 드려요.',
+    }
+  }
+  if (result.verdict === 'ad') {
+    return { ...result, report_type: 'none' }
   }
   if (result.verdict === 'fake' && result.report_type === 'none') {
     return { ...result, report_type: 'link' }

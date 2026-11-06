@@ -1,6 +1,6 @@
 // 2026-11-05 17:19 KST
 // AI 팝업 판별 정답률 측정.
-// test-images 의 fake_*.png 는 가짜, real_*.png 는 진짜로 보고, 사진마다 여러 번 판별해 결과를 센다.
+// test-images 의 fake_* 는 가짜, real_* 는 진짜, ad_* 는 평범한 광고로 보고, 사진마다 여러 번 판별해 결과를 센다.
 // 실행: npm run eval:ai                       (사진마다 2번, 판별 지식집 사용)
 //       npm run eval:ai -- 3                  (사진마다 3번)
 //       npm run eval:ai -- 3 --no-knowledge   (지식집 없이, 비교용)
@@ -40,8 +40,8 @@ if (!Object.values(keys).some(Boolean)) {
 
 const dir = join(root, 'test-images')
 const cases = readdirSync(dir)
-  .filter((f) => /^(fake|real)_.*\.png$/.test(f))
-  .map((f) => ({ file: f, expected: f.startsWith('fake') ? 'fake' : 'real' }))
+  .filter((f) => /^(fake|real|ad)_.*\.(png|jpe?g)$/.test(f))
+  .map((f) => ({ file: f, expected: f.split('_')[0], mediaType: f.endsWith('.png') ? 'image/png' : 'image/jpeg' }))
 
 const info = createAnalyzer(keys).info
 console.log(
@@ -60,7 +60,7 @@ for (const c of cases) {
     let confidence = '-'
     let pattern = '-'
     try {
-      const r = await analyzer.analyze('image/png', data)
+      const r = await analyzer.analyze(c.mediaType, data)
       verdict = r.verdict
       confidence = r.confidence
       pattern = r.pattern
@@ -78,14 +78,15 @@ for (const c of cases) {
 const done = rows.filter((r) => !r.verdict.startsWith('오류'))
 const correct = done.filter((r) => r.verdict === r.expected).length
 const unsure = done.filter((r) => r.verdict === 'unsure').length
-const dangerous = done.filter((r) => r.expected === 'fake' && r.verdict === 'real').length
-const falseAlarm = done.filter((r) => r.expected === 'real' && r.verdict === 'fake').length
+// 가짜를 진짜나 평범한 광고로 넘기면 사용자가 그대로 누를 수 있어 가장 위험하다.
+const dangerous = done.filter((r) => r.expected === 'fake' && ['real', 'ad'].includes(r.verdict)).length
+const falseAlarm = done.filter((r) => r.expected !== 'fake' && r.verdict === 'fake').length
 const avg = done.length ? (done.reduce((s, r) => s + r.sec, 0) / done.length).toFixed(1) : '-'
 const pct = (n) => (done.length ? `${((n / done.length) * 100).toFixed(0)}%` : '-')
 
 console.log('\n===== 요약 =====')
 console.log(`판별 ${done.length}회 (오류 ${rows.length - done.length}회)`)
 console.log(`정답 ${correct}회 (${pct(correct)}), 판단 어려움 ${unsure}회 (${pct(unsure)})`)
-console.log(`가장 위험한 오류 (가짜를 진짜로): ${dangerous}회`)
-console.log(`지나친 경고 (진짜를 가짜로): ${falseAlarm}회`)
+console.log(`가장 위험한 오류 (가짜를 진짜나 광고로): ${dangerous}회`)
+console.log(`지나친 경고 (진짜나 광고를 가짜로): ${falseAlarm}회`)
 console.log(`평균 응답 시간: ${avg}초`)

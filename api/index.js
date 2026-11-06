@@ -29,7 +29,7 @@ const analyzer = createAnalyzer(
   { store },
 )
 
-const EMPTY_STATS = { total: 0, fake: 0, real: 0, unsure: 0, feedback: 0, feedbackCorrect: 0, missedFakes: 0, byPattern: {} }
+const EMPTY_STATS = { total: 0, fake: 0, real: 0, ad: 0, unsure: 0, feedback: 0, feedbackCorrect: 0, missedFakes: 0, byPattern: {} }
 
 function corsHeaders(origin, selfOrigin) {
   const allowed = origin && (ALLOWED_ORIGINS.includes(origin) || origin === selfOrigin)

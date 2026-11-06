@@ -6,6 +6,7 @@ import {
   Flag,
   ImageUp,
   Loader2,
+  Megaphone,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -36,6 +37,13 @@ const VERDICT_STYLE = {
     box: 'bg-emerald-50 ring-emerald-600',
     iconBox: 'bg-emerald-700 text-white',
     tone: 'text-emerald-800',
+  },
+  ad: {
+    icon: Megaphone,
+    label: '평범한 광고',
+    box: 'bg-sky-50 ring-sky-400',
+    iconBox: 'bg-sky-700 text-white',
+    tone: 'text-sky-800',
   },
   unsure: {
     icon: CircleHelp,
@@ -247,7 +255,7 @@ function ResultView({ image, result, demoReason, onRemove, onAgain }) {
           </div>
         </div>
         <p className="mt-3 text-lg leading-relaxed text-stone-800">{result.explanation}</p>
-        {result.patternName && result.verdict !== 'unsure' && (
+        {result.patternName && ['fake', 'real'].includes(result.verdict) && (
           <p className="mt-2 text-lg font-bold text-stone-800">
             {result.verdict === 'fake' ? '알려진 수법: ' : '알려진 진짜 화면: '}
             {result.patternName}
@@ -298,6 +306,16 @@ function ResultView({ image, result, demoReason, onRemove, onAgain }) {
           <ShieldCheck className="mt-1 size-5 shrink-0 text-sky-700" />
           <span>
             진짜 알림이어도 <b>결제, 비밀번호, 인증번호 입력, 앱 설치</b>를 요구하면 멈추고 가족에게 물어보세요.
+          </span>
+        </p>
+      )}
+
+      {result.verdict === 'ad' && (
+        <p className="flex gap-2 rounded-2xl bg-sky-50 p-4 text-lg ring-1 ring-sky-300">
+          <Megaphone className="mt-1 size-5 shrink-0 text-sky-700" />
+          <span>
+            앱을 지울 필요는 없어요. 다만 광고가 <b>설치, 전화, 결제, 개인정보 입력</b>을 하라고 하면 그때는 가짜일 수
+            있으니 그 화면을 다시 찍어 확인해 주세요.
           </span>
         </p>
       )}

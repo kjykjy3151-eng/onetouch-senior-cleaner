@@ -78,9 +78,9 @@ function LearningStats() {
           <dd className="font-bold">{stats.total}건</dd>
         </div>
         <div className="flex justify-between">
-          <dt>가짜, 진짜, 어려움</dt>
+          <dt>가짜, 진짜, 광고, 어려움</dt>
           <dd className="font-bold">
-            {stats.fake}, {stats.real}, {stats.unsure}
+            {stats.fake}, {stats.real}, {stats.ad ?? 0}, {stats.unsure}
           </dd>
         </div>
         <div className="flex justify-between">
@@ -92,7 +92,8 @@ function LearningStats() {
           <dd className="font-bold">{stats.missedFakes}건</dd>
         </div>
       </dl>
-      <p className="mt-2 text-base text-stone-600">판별 지식집: 가짜 수법 7가지, 진짜 경고 4가지</p>
+      <p className="mt-2 text-base text-stone-600">배포 서버(Upstash)에 실제로 저장된 기록이에요. 사진은 저장하지 않아요.</p>
+      <p className="mt-1 text-base text-stone-600">판별 지식집: 가짜 수법 7가지, 진짜 경고 4가지</p>
     </section>
   )
 }

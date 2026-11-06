@@ -51,6 +51,7 @@ export function summarizeCases(cases) {
     total: cases.length,
     fake: count('verdict', 'fake'),
     real: count('verdict', 'real'),
+    ad: count('verdict', 'ad'),
     unsure: count('verdict', 'unsure'),
     feedback: withFeedback.length,
     feedbackCorrect: withFeedback.filter((c) => c.feedback.correct).length,
@@ -74,7 +75,9 @@ export function learningExamplesFrom(cases, limit = 6) {
       const head =
         c.verdict === 'fake'
           ? `실제로 가짜였던 화면${name ? `, 수법: ${name}` : ''}`
-          : `AI가 진짜${name ? ` "${name}"` : ''}(으)로 착각했지만 사용자가 가짜라고 알려 준 화면 (비슷하게 생긴 가짜에 주의)`
+          : c.verdict === 'ad'
+            ? 'AI가 평범한 광고로 착각했지만 사용자가 가짜라고 알려 준 화면 (광고처럼 생긴 가짜에 주의)'
+            : `AI가 진짜${name ? ` "${name}"` : ''}(으)로 착각했지만 사용자가 가짜라고 알려 준 화면 (비슷하게 생긴 가짜에 주의)`
       return `- ${head}. AI가 본 단서: ${c.clues.join(' / ')}`
     })
 }
