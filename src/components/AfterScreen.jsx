@@ -4,12 +4,9 @@ import confetti from 'canvas-confetti'
 import {
   BadgeCheck,
   BellOff,
-  Ban,
   Check,
   ChevronRight,
   Flag,
-  Gift,
-  Lock,
   RotateCcw,
   ScanSearch,
   ShieldCheck,
@@ -172,45 +169,29 @@ export default function AfterScreen({ speech, fontLevel, fontLevels, onCycleFont
   )
 }
 
+// 상단은 한 줄로 작게: 앱 이름과 '안전 약속' 버튼만 둔다 (약속 내용은 안전 약속 화면에 있다)
 function Header({ onPromise }) {
-  const chips = [
-    { label: '개인정보 보호', icon: Lock },
-    { label: '광고 없음', icon: Ban },
-    { label: '무료', icon: Gift },
-  ]
-
   return (
-    <header className="fixed-text shrink-0 space-y-3 border-b border-stone-200 bg-white px-4 pt-4 pb-4 shadow-sm">
-      <div className="flex items-center gap-2">
+    <header className="fixed-text flex shrink-0 items-center justify-between gap-4 border-b border-stone-200 bg-white px-4 py-2 shadow-sm">
+      <div className="flex min-w-0 items-center gap-2">
         <img
           src={`${import.meta.env.BASE_URL}logo.png`}
           alt=""
-          className="size-12 rounded-2xl shadow-md shadow-emerald-700/30"
+          className="size-9 shrink-0 rounded-xl shadow-sm shadow-emerald-700/30 max-[359px]:hidden"
         />
-        <h1 className="text-xl leading-tight font-extrabold whitespace-nowrap">원터치 클리너</h1>
+        <h1 className="text-lg leading-tight font-extrabold whitespace-nowrap">원터치 클리너</h1>
       </div>
 
       <button
         type="button"
         onClick={onPromise}
-        className="inline-flex min-h-12 items-center gap-2 rounded-full bg-emerald-100 px-4 text-lg font-bold text-emerald-800 ring-1 ring-emerald-300 hover:bg-emerald-200"
+        aria-label="이 앱의 안전 약속 보기"
+        className="inline-flex min-h-12 shrink-0 items-center gap-1 rounded-full bg-emerald-100 px-3 text-base font-bold whitespace-nowrap text-emerald-800 ring-1 ring-emerald-300 hover:bg-emerald-200"
       >
-        <BadgeCheck className="size-6" />
-        이 앱의 안전 약속 보기
-        <ChevronRight className="size-5" />
+        <BadgeCheck className="size-5 max-[379px]:hidden" />
+        안전 약속
+        <ChevronRight className="size-4" />
       </button>
-
-      <ul className="flex flex-wrap gap-2" aria-label="이 앱의 약속">
-        {chips.map(({ label, icon: Icon }) => (
-          <li
-            key={label}
-            className="flex items-center gap-1.5 rounded-full bg-stone-100 px-3 py-1 text-base text-stone-800"
-          >
-            <Icon className="size-4 text-emerald-700" />
-            {label}
-          </li>
-        ))}
-      </ul>
     </header>
   )
 }
