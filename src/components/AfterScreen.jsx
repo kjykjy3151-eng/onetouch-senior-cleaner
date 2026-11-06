@@ -7,6 +7,7 @@ import {
   Check,
   ChevronRight,
   Flag,
+  Info,
   RotateCcw,
   ScanSearch,
   ShieldCheck,
@@ -357,7 +358,7 @@ function ScanPanel({ onDone }) {
 
       <div>
         <p className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 font-bold text-emerald-800">
-          <Sparkles className="size-4" /> AI 실시간 패턴 분석 중
+          <Sparkles className="size-4" /> 패턴 분석 중 (시연용 예시)
         </p>
         <p className="mt-3 text-lg text-stone-700 tabular-nums">
           앱 {Math.round(progress * TOTAL_APPS)} / {TOTAL_APPS}개 확인
@@ -407,6 +408,10 @@ function FoundPanel({ selected, onToggle, onClean, onCancel }) {
         </div>
         <p className="mt-3 text-lg text-stone-800">
           걱정하지 마세요. 휴대폰은 고장 나지 않았어요. 지우고 싶은 앱만 골라 주세요.
+        </p>
+        <p className="mt-3 flex gap-2 rounded-xl bg-white px-3 py-2 text-base text-stone-700">
+          <Info className="mt-0.5 size-5 shrink-0 text-sky-700" />
+          시연용 예시 앱이에요. 웹에서는 휴대폰의 앱 목록을 읽을 수 없어서, 실제 삭제는 다음 안내를 따라 휴대폰 설정에서 직접 해요.
         </p>
       </section>
 
